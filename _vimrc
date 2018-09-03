@@ -12,10 +12,12 @@ set nu
 set encoding=utf-8
 set cursorline "高亮光标所在行
 set cursorcolumn "高亮光标所在列
+" 设置空白字符的视觉提示
+set list listchars=extends:❯,precedes:❮,tab:▸\ ,trail:˽
 "----------------设置tab键宽度-------------------------------
-"tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。 
-" softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。 
-" shiftwidth 表示每一级缩进的长度，一般设置成跟 softtabstop 一样 
+"tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
+" softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。
+" shiftwidth 表示每一级缩进的长度，一般设置成跟 softtabstop 一样
 " expandtab与noexpandtab 当设置成 expandtab 时，缩进用空格来表示，noexpandtab 则是用制表符表示一个缩进。个人习惯使用 ｀set expandtab｀ 
 set tabstop=4
 set softtabstop=4
@@ -23,12 +25,17 @@ set shiftwidth=4
 set expandtab
 "-------------solarized颜色主题设置---------------------------
 set background=dark
-set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14
-colorscheme solarized
+"colorscheme solarized
+colorscheme gruvbox
 
-call plug#begin('e:/zwh/software/vim/vimfiles/plugged')
+if has('nvim')
+  call plug#begin('e:/zwh/software/Neovim/share/nvim/plugged')
+else
+  call plug#begin('e:/zwh/software/vim/vimfiles/plugged')
+endif
 "----------------------颜色主题-------------------------------
 Plug 'altercation/vim-colors-solarized'
+Plug 'morhetz/gruvbox'
 
 if !has('nvim')
 "----------------YouCompleteMe--------------------------------
