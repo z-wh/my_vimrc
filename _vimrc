@@ -3,10 +3,10 @@ if !has('nvim')
     let $LANG ='en'
     set langmenu=en
     source $VIMRUNTIME/vimrc_example.vim
-    inoremap <A-h> <Left>
-    inoremap <A-l> <Right>
-    inoremap <A-k> <Up>
-    inoremap <A-j> <Down>
+    inoremap <C-h> <ESC>h
+    inoremap <C-l> <ESC>l
+    inoremap <C-k> <ESC>k
+    inoremap <C-j> <ESC>j
     set guioptions-=m
     set guioptions-=r
     set guioptions-=T
@@ -22,7 +22,7 @@ set encoding=utf-8
 set cursorline "高亮光标所在行
 set cursorcolumn "高亮光标所在列
 " 设置空白字符的视觉提示
-set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽,nbsp:%
+set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
 " softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。
@@ -60,12 +60,12 @@ Plug 'morhetz/gruvbox'
 "endif
 
 "----------------全屏插件---------------------------------
-"guimtweak {
+"fullscreen {
     if has('nvim')
         Plug 'lambdalisue/vim-fullscreen'
         let g:fullscreen#start_command = "call rpcnotify(0, 'Gui', 'WindowFullScreen', 1)"
         let g:fullscreen#stop_command = "call rpcnotify(0, 'Gui', 'WindowFullScreen', 0)"
-    else
+    elseif has('win32') || has('win64')
         Plug 'zhmars/gvimtweak'
         let g:gvimtweak#window_alpha=240
         let g:gvimtweak#enable_alpha_at_startup=1
@@ -205,6 +205,14 @@ Plug 'mattn/emmet-vim'
 
 "------------------------------css颜色显示插件---------------------------
 Plug 'ap/vim-css-color'
+
+"-----------------------git,gitgutter,gitst------------------------------
+"git {
+    Plug 'tpope/vim-fugitive'
+    Plug 'airblade/vim-gitgutter'
+"}
+
+
 
 call plug#end()
 
