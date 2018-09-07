@@ -3,10 +3,10 @@ if !has('nvim')
     let $LANG ='en'
     set langmenu=en
     source $VIMRUNTIME/vimrc_example.vim
-    inoremap <C-h> <ESC>h
-    inoremap <C-l> <ESC>l
-    inoremap <C-k> <ESC>k
-    inoremap <C-j> <ESC>j
+    inoremap <S-h> <ESC>h
+    inoremap <S-l> <ESC>l
+    inoremap <S-k> <ESC>k
+    inoremap <S-j> <ESC>j
     set guioptions-=m
     set guioptions-=r
     set guioptions-=T
@@ -23,6 +23,8 @@ set cursorline "高亮光标所在行
 set cursorcolumn "高亮光标所在列
 " 设置空白字符的视觉提示
 set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
+" 设置更新时间
+set updatetime=100
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
 " softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。
@@ -34,7 +36,6 @@ set shiftwidth=4
 set expandtab
 "-------------颜色主题设置---------------------------
 set background=dark
-"colorscheme solarized
 colorscheme gruvbox
 
 if has('nvim')
@@ -55,9 +56,9 @@ Plug 'morhetz/gruvbox'
 "    let g:airline#extensions#tabline#formatter = 'default'
 "}
 "----------------YouCompleteMe--------------------------------
-"if !has('nvim')
+if !has('nvim')
     Plug 'Valloric/YouCompleteMe'
-"endif
+endif
 
 "----------------全屏插件---------------------------------
 "fullscreen {
@@ -188,8 +189,17 @@ Plug 'morhetz/gruvbox'
     "}
 "}
 
+"----------------------------------taglist-------------------------------
+Plug 'vim-scripts/taglist.vim'
+
 "----------------------------------emmet---------------------------------
 Plug 'mattn/emmet-vim'
+
+"------------------------------css颜色显示插件---------------------------
+Plug 'ap/vim-css-color'
+
+"----------------------------多行游标------------------------------------
+Plug 'terryma/vim-multiple-cursors'
 
 "--------------------------文件浏览nerdtree------------------------------
 "nerdtree {
@@ -203,13 +213,18 @@ Plug 'mattn/emmet-vim'
     nnoremap <leader>u :UndotreeToggle<cr>
 "}
 
-"------------------------------css颜色显示插件---------------------------
-Plug 'ap/vim-css-color'
+"------------------------------搜索--------------------------------------
+Plug 'ctrlpvim/ctrlp.vim'
 
 "-----------------------git,gitgutter,gitst------------------------------
 "git {
     Plug 'tpope/vim-fugitive'
     Plug 'airblade/vim-gitgutter'
+
+    "gist {
+        Plug 'mattn/webapi-vim'
+        Plug 'mattn/gist-vim'
+    "}
 "}
 
 
