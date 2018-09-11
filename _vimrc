@@ -3,10 +3,13 @@ if !has('nvim')
     let $LANG ='en'
     set langmenu=en
     source $VIMRUNTIME/vimrc_example.vim
-    inoremap <S-h> <ESC>h
-    inoremap <S-l> <ESC>l
-    inoremap <S-k> <ESC>k
-    inoremap <S-j> <ESC>j
+    "以下插入模式下移动快捷键映射
+    "每次要重新加载一下才起效 ：source %
+    "可能这个版本有问题
+    inoremap <M-h> <ESC>h
+    inoremap <M-l> <ESC>l
+    inoremap <M-k> <ESC>k
+    inoremap <M-j> <ESC>j
     set guioptions-=m
     set guioptions-=r
     set guioptions-=T
@@ -21,15 +24,16 @@ set nu
 set encoding=utf-8
 set cursorline "高亮光标所在行
 set cursorcolumn "高亮光标所在列
-" 设置空白字符的视觉提示
+"设置空白字符的视觉提示
 set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
-" 设置更新时间
+"设置更新时间
 set updatetime=100
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
-" softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。
-" shiftwidth 表示每一级缩进的长度，一般设置成跟 softtabstop 一样
-" expandtab与noexpandtab 当设置成 expandtab 时，缩进用空格来表示，noexpandtab 则是用制表符表示一个缩进。个人习惯使用 ｀set expandtab｀ 
+"softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度。
+"shiftwidth 表示每一级缩进的长度，一般设置成跟 softtabstop 一样
+"expandtab与noexpandtab 当设置成 expandtab 时，缩进用空格来表示，
+"noexpandtab 则是用制表符表示一个缩进。
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
@@ -140,6 +144,7 @@ endif
     let g:LanguageClient_serverCommands = {
         \ 'javascript': ["node","C:/Users/Administrator/AppData/Roaming/npm/node_modules/lsp-tsserver/dist/server.js"],
         \ 'css': ["node", "C:/Users/Administrator/AppData/Roaming/npm/node_modules/vscode-css-languageserver-bin/cssServerMain.js", "--stdio"],
+        \ 'scss': ["node", "C:/Users/Administrator/AppData/Roaming/npm/node_modules/vscode-css-languageserver-bin/cssServerMain.js", "--stdio"],
         \ }
     nnoremap <F5> :call LanguageClient_contextMenu()<CR>
     " Or map each action separately
@@ -219,7 +224,11 @@ Plug 'ctrlpvim/ctrlp.vim'
 "-----------------------git,gitgutter,gitst------------------------------
 "git {
     Plug 'tpope/vim-fugitive'
-    Plug 'airblade/vim-gitgutter'
+    if has('nvim')
+        Plug 'airblade/vim-gitgutter'
+    else
+        Plug 'mhinz/vim-signify'
+    endif
 
     "gist {
         Plug 'mattn/webapi-vim'
