@@ -2,28 +2,17 @@ if !has('nvim')
     set nocompatible
     let $LANG ='en'
     set langmenu=en
-    source $VIMRUNTIME/vimrc_example.vim
-    "以下插入模式下移动快捷键映射
-    "每次要重新加载一下才起效 ：source %
-    "可能这个版本有问题
-    inoremap <M-h> <ESC>h
-    inoremap <M-l> <ESC>l
-    inoremap <M-k> <ESC>k
-    inoremap <M-j> <ESC>j
     set guioptions-=m
     set guioptions-=r
     set guioptions-=T
     set guioptions-=L
 endif
-if has('nvim')
-    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI
-else
-    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI
-endif
 set nu
 set encoding=utf-8
-set cursorline "高亮光标所在行
-set cursorcolumn "高亮光标所在列
+"高亮光标所在行
+set cursorline 
+"高亮光标所在列
+set cursorcolumn 
 "设置空白字符的视觉提示
 set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
 "设置更新时间
@@ -41,6 +30,16 @@ set expandtab
 "-------------颜色主题设置---------------------------
 set background=dark
 colorscheme gruvbox
+set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI
+"------------快捷键映射------------------------------
+if !has('nvim')
+    "插入模式下移动快捷键映射
+    "放在最上面M键映射不成功，放下面才能映射成功
+    inoremap <M-h> <ESC>h
+    inoremap <M-l> <ESC>l
+    inoremap <M-k> <ESC>k
+    inoremap <M-j> <ESC>j
+endif
 
 if has('nvim')
     call plug#begin('e:/zwh/software/Neovim/share/nvim/plugged')
@@ -55,9 +54,7 @@ Plug 'morhetz/gruvbox'
 "airline {
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
-"    let g:airline_theme='simple'
     let g:airline#extensions#tabline#enabled = 1
-"    let g:airline#extensions#tabline#formatter = 'default'
 "}
 "----------------YouCompleteMe--------------------------------
 if !has('nvim')
@@ -187,21 +184,50 @@ endif
     "}
     
     "ncm2-match-highlight {高亮匹配项插件
-        "if !has('nvim')
+        if !has('nvim')
             Plug 'ncm2/ncm2-match-highlight'
             let g:ncm2#match_highlight = 'double-struck'
-        "endif
+        endif
     "}
 "}
 
 "----------------------------------taglist-------------------------------
 Plug 'vim-scripts/taglist.vim'
 
-"----------------------------------emmet---------------------------------
-Plug 'mattn/emmet-vim'
+"----------------------------------html插件------------------------------
+"html {
+    Plug 'othree/html5.vim'
+    "----------emmet----------
+    Plug 'mattn/emmet-vim'
+    "-----css颜色显示插件-----
+    Plug 'ap/vim-css-color'
+    "--------html css js格式化插件-------
+    "vim-jsbeautify {
+        Plug 'maksimr/vim-jsbeautify'
+        "for js
+        autocmd FileType javascript noremap <buffer>  <c-f> :call JsBeautify()<cr>
+        autocmd FileType javascript vnoremap <buffer>  <c-f> :call RangeJsBeautify()<cr>
+        " for json
+        autocmd FileType json noremap <buffer> <c-f> :call JsonBeautify()<cr>
+        autocmd FileType json vnoremap <buffer> <c-f> :call RangeJsonBeautify()<cr>
+        " for jsx
+        autocmd FileType jsx noremap <buffer> <c-f> :call JsxBeautify()<cr>
+        autocmd FileType jsx vnoremap <buffer> <c-f> :call RangeJsxBeautify()<cr>
+        " for html
+        autocmd FileType html noremap <buffer> <c-f> :call HtmlBeautify()<cr>
+        autocmd FileType html vnoremap <buffer> <c-f> :call RangeHtmlBeautify()<cr>
+        " for css or scss
+        autocmd FileType css noremap <buffer> <c-f> :call CSSBeautify()<cr>
+        autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
+    "}
+"}
 
-"------------------------------css颜色显示插件---------------------------
-Plug 'ap/vim-css-color'
+"-------------------------------格式化插件-------------------------------
+Plug 'Chiel92/vim-autoformat'
+"-------------------------------代码风格检查插件-------------------------
+"jshint {
+    Plug 'Shutnik/jshint2.vim'
+"}
 
 "----------------------------多行游标------------------------------------
 Plug 'terryma/vim-multiple-cursors'
@@ -231,12 +257,12 @@ Plug 'ctrlpvim/ctrlp.vim'
     endif
 
     "gist {
-        Plug 'mattn/webapi-vim'
-        Plug 'mattn/gist-vim'
+        "gist-vim {
+            Plug 'mattn/webapi-vim'
+            Plug 'mattn/gist-vim'
+        "}
     "}
 "}
-
-
 
 call plug#end()
 
@@ -275,4 +301,3 @@ if !has('nvim')
         endif
     endfunction
 endif
-
