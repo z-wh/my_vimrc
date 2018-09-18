@@ -8,12 +8,31 @@ if !has('nvim')
     set guioptions-=L "去除左滚动条
 endif
 
+"------------------------判断是什么操作系统------------------
+function! OSX()
+    return has('macunix')
+endfunction
+function! LINUX()
+    return has('unix') && !has('macunix') && !has('win32unix')
+endfunction
+function! WINDOWS()
+    return  (has('win16') || has('win32') || has('win64'))
+endfunction
+
+"将windows文件放置位置设成和linux一样
+"方便配置文件多平台通用
+if WINDOWS()
+    if !has('nvim')
+        set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+endif
+
 set nu "显示行号
 set encoding=utf-8
 "高亮光标所在行
-set cursorline 
+set cursorline
 "高亮光标所在列
-set cursorcolumn 
+set cursorcolumn
 "设置空白字符的视觉提示
 set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
 "设置更新时间
@@ -54,12 +73,18 @@ inoremap { {}<ESC>i
 inoremap {<CR> {<CR>}<ESC>O
 inoremap ' ''<ESC>i
 inoremap [ []<ESC>i
+inoremap ( ()<ESC>i
+
+"--------------------定义文件夹路径变量---------------------------
+let nvim_plugin_path=$VIM.'/plugged'
+let vim_plugin_path=$VIM.'/vimfiles/plugged'
+let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python36\python.exe'
 
 "---------------vim-plug管理配置插件开始--------------------------
 if has('nvim')
-    call plug#begin('e:/zwh/software/Neovim/share/nvim/plugged')
+    call plug#begin(nvim_plugin_path)
 else
-    call plug#begin('e:/zwh/software/vim/vimfiles/plugged')
+    call plug#begin(vim_plugin_path)
 endif
 
 "----------------------颜色主题-------------------------------
@@ -99,7 +124,7 @@ endif
     "nvim-yarp {
         Plug 'roxma/nvim-yarp'
         "指定python3的路径地址
-        let g:python3_host_prog = 'C:\Users\Administrator\AppData\Local\Programs\Python\Python36\python.exe'
+        let g:python3_host_prog=pyt3_path
     "}
 
     "vim 使用ncm2需要额外安装该插件支持
@@ -238,6 +263,8 @@ Plug 'vim-scripts/taglist.vim'
         autocmd FileType css vnoremap <buffer> <c-f> :call RangeCSSBeautify()<cr>
     "}
 "}
+"----------------------------注释插件------------------------------------
+Plug 'scrooloose/nerdcommenter'
 
 "----------------------------多语言格式化插件----------------------------
 Plug 'Chiel92/vim-autoformat'
@@ -325,8 +352,16 @@ Plug 'ctrlpvim/ctrlp.vim'
     "}
 "}
 
+"--------------------------终端命令异步执行-----------------------------
+Plug 'skywind3000/asyncrun.vim'
+
 call plug#end()
 "-------------------vim-plug管理配置插件结束----------------------------
+
+"---------------------------删除自定义变量------------------------------
+unlet nvim_plugin_path
+unlet vim_plugin_path
+unlet pyt3_path
 
 if !has('nvim')
     set diffexpr=MyDiff()
