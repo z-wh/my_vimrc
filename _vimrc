@@ -23,7 +23,7 @@ endfunction
 "方便配置文件多平台通用
 if WINDOWS()
     if !has('nvim')
-        set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+        set runtimepath+=$HOME/.vim,$HOME/.vim/after
     endif
 endif
 
@@ -76,15 +76,13 @@ inoremap [ []<ESC>i
 inoremap ( ()<ESC>i
 
 "--------------------定义文件夹路径变量---------------------------
-let nvim_plugin_path=$VIM.'/plugged'
-let vim_plugin_path=$VIM.'/vimfiles/plugged'
 let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python36\python.exe'
 
 "---------------vim-plug管理配置插件开始--------------------------
 if has('nvim')
-    call plug#begin(nvim_plugin_path)
+    call plug#begin($VIM.'/plugged')
 else
-    call plug#begin(vim_plugin_path)
+    call plug#begin($VIM.'/vimfiles/plugged')
 endif
 
 "----------------------颜色主题-------------------------------
@@ -125,6 +123,7 @@ endif
         Plug 'roxma/nvim-yarp'
         "指定python3的路径地址
         let g:python3_host_prog=pyt3_path
+        unlet pyt3_path
     "}
 
     "vim 使用ncm2需要额外安装该插件支持
@@ -339,9 +338,15 @@ Plug 'ctrlpvim/ctrlp.vim'
 "git {
     Plug 'tpope/vim-fugitive'
     if has('nvim')
-        Plug 'airblade/vim-gitgutter'
+        "vim-gitgutter {
+            Plug 'airblade/vim-gitgutter'
+        "}
     else
-        Plug 'mhinz/vim-signify'
+        "vim-gitgutter {
+            Plug 'airblade/vim-gitgutter'
+            let g:gitgutter_async=0 "不设置此项会导致整个文件标记为添加
+        "}
+        "Plug 'mhinz/vim-signify'
     endif
 
     "gist {
@@ -357,11 +362,6 @@ Plug 'skywind3000/asyncrun.vim'
 
 call plug#end()
 "-------------------vim-plug管理配置插件结束----------------------------
-
-"---------------------------删除自定义变量------------------------------
-unlet nvim_plugin_path
-unlet vim_plugin_path
-unlet pyt3_path
 
 if !has('nvim')
     set diffexpr=MyDiff()
