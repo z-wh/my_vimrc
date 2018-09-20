@@ -29,14 +29,26 @@ endif
 
 set nu "显示行号
 set encoding=utf-8
+set backup "保存备份
+set undofile "保存撤销历史记录
+set showcmd "右下角显示未完成的命令
+set wildmenu "显示状态栏提示cmd命令
 "高亮光标所在行
 set cursorline
 "高亮光标所在列
 set cursorcolumn
 "设置空白字符的视觉提示
 set list listchars=extends:❯,precedes:❮,tab:\|\ ,trail:˽
+"高亮搜索到的词
+set hlsearch
+"在查找模式输入完前显示匹配到的词
+set incsearch
 "设置更新时间
 set updatetime=100
+"在插入模式下 <BS> 如何删除光标前面的字符。
+"逗号分隔的三个值分别指：行首的空白字符，分行符和插入模式开始处之前的字符。
+set backspace=indent,eol,start
+set history=200
 
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
@@ -56,8 +68,12 @@ endif
 
 set background=dark
 colorscheme gruvbox
-set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI "字体
 
+if has('nvim')
+    "GuiFont! DejaVu Sans Mono for Powerline:h14
+else
+    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI "字体
+endif
 "------------快捷键映射------------------------------
 if !has('nvim')
     "插入模式下移动快捷键映射
@@ -185,6 +201,8 @@ endif
     " (Optional) Multi-entry selection UI.
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
+
+    Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
 "}
 
 "ncm2 source {
@@ -222,10 +240,10 @@ endif
     "}
     
     "ncm2-match-highlight {高亮匹配项插件
-        if !has('nvim')
+        "if !has('nvim')
             Plug 'ncm2/ncm2-match-highlight'
             let g:ncm2#match_highlight = 'double-struck'
-        endif
+        "endif
     "}
 "}
 
@@ -337,23 +355,24 @@ Plug 'ctrlpvim/ctrlp.vim'
 "-----------------------git,gitgutter,gitst------------------------------
 "git {
     Plug 'tpope/vim-fugitive'
-    if has('nvim')
-        "vim-gitgutter {
-            Plug 'airblade/vim-gitgutter'
-        "}
-    else
-        "vim-gitgutter {
-            Plug 'airblade/vim-gitgutter'
-            let g:gitgutter_async=0 "不设置此项会导致整个文件标记为添加
-        "}
-        "Plug 'mhinz/vim-signify'
-    endif
+"}
 
-    "gist {
-        "gist-vim {
-            Plug 'mattn/webapi-vim'
-            Plug 'mattn/gist-vim'
+"vim-gitgutter {
+    if has('nvim')
+        Plug 'airblade/vim-gitgutter'
+    else
+        "Plug 'airblade/vim-gitgutter'
+        "let g:gitgutter_async=0 "不设置此项会导致整个文件标记为添加
+        "vim-signify {
+            Plug 'mhinz/vim-signify'
         "}
+    endif
+"}
+
+"gist {
+    "gist-vim {
+        Plug 'mattn/webapi-vim'
+        Plug 'mattn/gist-vim'
     "}
 "}
 
