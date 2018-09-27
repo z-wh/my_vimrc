@@ -1,13 +1,3 @@
-if !has('nvim')
-    set nocompatible "去除和vi的一致兼容
-    let $LANG ='en' "设置为英语，因为utf-8导致中文乱码
-    set langmenu=en
-    set guioptions-=m "去除菜单
-    set guioptions-=r "去除右滚动条
-    set guioptions-=T "去除工具栏
-    set guioptions-=L "去除左滚动条
-endif
-
 "------------------------判断是什么操作系统------------------
 function! OSX()
     return has('macunix')
@@ -19,11 +9,89 @@ function! WINDOWS()
     return  (has('win16') || has('win32') || has('win64'))
 endfunction
 
+"---------根据操作系统检测vim-plug是否存在和是否要下载------
+if WINDOWS()
+
+    if has('nvim')
+
+        let vimplugPath=expand('~/AppData/Local/nvim/autoload/plug.vim')
+
+        if !filereadable(vimplugPath)
+            echo "Installing Vim-Plug..."
+            silent !curl -fLo AppData/Local/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            echo "vim-Plug install complete......."
+
+            autocmd VimEnter * PlugInstall
+        endif
+
+        let plugPath='~/AppData/Local/nvim/plugged'
+
+    else
+
+        let vimplugPath=expand('~/vimfiles/autoload/plug.vim')
+        
+        if !filereadable(vimplugPath)
+            echo "Installing Vim-Plug..."
+            "vim shell命令无法调用powershell下载，因此需要安装curl下载
+            silent !curl -fLo vimfiles/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            echo "vim-Plug install complete......."
+
+            autocmd VimEnter * PlugInstall
+        endif
+
+        let plugPath=expand('~/vimfiles/plugged')
+
+    endif
+
+else
+
+    if has('nvim')
+
+        let vimplugPath=expand('~/.local/share/nvim/site/autoload/plug.vim')
+
+        if !filereadable(vimplugPath)
+            echo "Installing Vim-Plug..."
+            echo ""
+            silent !\curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+            autocmd VimEnter * PlugInstall
+        endif
+
+        let plugPath=expand('~/.local/share/nvim/plugged')
+
+    else
+
+        let vimplugPath=expand('~/.vim/autoload/plug.vim')
+
+        if !filereadable(vimplugPath)
+            echo "Installing Vim-Plug..."
+            echo ""
+            silent !\curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+            autocmd VimEnter * PlugInstall
+        endif
+
+        let plugPath=expand('~/.vim/plugged')
+
+    endif
+
+endif
+
+if !has('nvim')
+    set nocompatible "去除和vi的一致兼容
+    let $LANG ='en' "设置为英语，因为utf-8导致中文乱码
+    set langmenu=en
+    set guioptions-=m "去除菜单
+    set guioptions-=r "去除右滚动条
+    set guioptions-=T "去除工具栏
+    set guioptions-=L "去除左滚动条
+endif
+
 "将windows文件放置位置设成和linux一样
 "方便配置文件多平台通用
 if WINDOWS()
     if !has('nvim')
-        set runtimepath+=$HOME/.vim,$HOME/.vim/after
+        set runtimepath+=$HOME\.vim,$HOME\.vim\after
     endif
 endif
 
@@ -49,6 +117,7 @@ set updatetime=100
 "逗号分隔的三个值分别指：行首的空白字符，分行符和插入模式开始处之前的字符。
 set backspace=indent,eol,start
 set history=200
+set cmdheight=2
 
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
@@ -70,36 +139,34 @@ set background=dark
 colorscheme gruvbox
 
 if has('nvim')
-    "GuiFont! DejaVu Sans Mono for Powerline:h14
+    "GuiFont Consolas:h14
 else
     set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI "字体
 endif
 "------------快捷键映射------------------------------
-if !has('nvim')
-    "插入模式下移动快捷键映射
-    "放在最上面M键映射不成功，放下面才能映射成功
-    inoremap <M-h> <ESC>h
-    inoremap <M-l> <ESC>l
-    inoremap <M-k> <ESC>k
-    inoremap <M-j> <ESC>j
-endif
+"mapping {
+    if !has('nvim')
+        "插入模式下移动快捷键映射
+        "放在最上面M键映射不成功，放下面才能映射成功
+        inoremap <M-h> <ESC>h
+        inoremap <M-l> <ESC>l
+        inoremap <M-k> <ESC>k
+        inoremap <M-j> <ESC>j
+    endif
 
-inoremap " ""<ESC>i
-inoremap { {}<ESC>i
-inoremap {<CR> {<CR>}<ESC>O
-inoremap ' ''<ESC>i
-inoremap [ []<ESC>i
-inoremap ( ()<ESC>i
+    inoremap " ""<ESC>i
+    inoremap { {}<ESC>i
+    inoremap {<CR> {<CR>}<ESC>O
+    inoremap ' ''<ESC>i
+    inoremap [ []<ESC>i
+    inoremap ( ()<ESC>i
+"}
 
 "--------------------定义文件夹路径变量---------------------------
-let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python36\python.exe'
+let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\python.exe'
 
 "---------------vim-plug管理配置插件开始--------------------------
-if has('nvim')
-    call plug#begin($VIM.'/plugged')
-else
-    call plug#begin($VIM.'/vimfiles/plugged')
-endif
+call plug#begin(plugPath)
 
 "----------------------颜色主题-------------------------------
 Plug 'altercation/vim-colors-solarized'
@@ -113,9 +180,9 @@ Plug 'morhetz/gruvbox'
 "}
 
 "----------------YouCompleteMe--------------------------------
-if !has('nvim')
+"if !has('nvim')
     Plug 'Valloric/YouCompleteMe'
-endif
+"endif
 
 "----------------全屏插件---------------------------------
 "fullscreen {
@@ -186,7 +253,7 @@ endif
         \ 'branch': 'next',
         \ 'do': 'powershell -executionpolicy bypass -File install.ps1'
         \ }
-    set hidden
+    set hidden "不用保存也能切换buffer"
     let g:LanguageClient_serverCommands = {
         \ 'javascript': ["node","C:/Users/Administrator/AppData/Roaming/npm/node_modules/lsp-tsserver/dist/server.js"],
         \ 'css': ["node", "C:/Users/Administrator/AppData/Roaming/npm/node_modules/vscode-css-languageserver-bin/cssServerMain.js", "--stdio"],
@@ -202,7 +269,9 @@ endif
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
 
-    Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
+   "php lsp { 
+    "Plug 'felixfbecker/php-language-server', {'do': 'composer install && composer run-script parse-stubs'}
+    "}
 "}
 
 "ncm2 source {
@@ -216,34 +285,32 @@ endif
     Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
     Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
     Plug 'ncm2/ncm2-html-subscope'
-  
-    "vim-snipmate {
-        "代码片断插件
-        Plug 'ncm2/ncm2-snipmate'
-        " snipmate dependencies
-        Plug 'tomtom/tlib_vim'
-        Plug 'marcweber/vim-addon-mw-utils'
-        Plug 'garbas/vim-snipmate'
+
+    " Phpactor {
+    Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
+    Plug 'phpactor/ncm2-phpactor'  
+    "}
+
+    "snips {
+        Plug 'ncm2/ncm2-ultisnips'
+        Plug 'SirVer/ultisnips'
 
         " Press enter key to trigger snippet expansion
         " The parameters are the same as `:help feedkeys()`
-        inoremap <silent> <expr> <CR> ncm2_snipmate#expand_or("\<CR>", 'n')
-        " wrap <Plug>snipMateTrigger so that it works for both completin and normal
-        " snippet
-        " inoremap <expr> <c-u> ncm2_snipmate#expand_or("\<Plug>snipMateTrigger", "m")
+        inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
+
         " c-j c-k for moving in snippet
-        let g:snips_no_mappings = 1
-        vmap <c-j> <Plug>snipMateNextOrTrigger
-        vmap <c-k> <Plug>snipMateBack
-        imap <expr> <c-k> pumvisible() ? "\<c-y>\<Plug>snipMateBack" : "\<Plug>snipMateBack"
-        imap <expr> <c-j> pumvisible() ? "\<c-y>\<Plug>snipMateNextOrTrigger" : "\<Plug>snipMateNextOrTrigger"
+        " let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
+        let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
+        let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+        let g:UltiSnipsRemoveSelectModeMappings = 0
     "}
-    
+
     "ncm2-match-highlight {高亮匹配项插件
-        "if !has('nvim')
+        if !has('nvim')
             Plug 'ncm2/ncm2-match-highlight'
             let g:ncm2#match_highlight = 'double-struck'
-        "endif
+        endif
     "}
 "}
 
@@ -313,9 +380,7 @@ Plug 'Chiel92/vim-autoformat'
 	\		'vim': {
 	\			'parentheses': ['start=/(/ end=/)/', 'start=/\[/ end=/\]/', 'start=/{/ end=/}/ fold', 'start=/(/ end=/)/ containedin=vimFuncBody', 'start=/\[/ end=/\]/ containedin=vimFuncBody', 'start=/{/ end=/}/ fold containedin=vimFuncBody'],
 	\		},
-	\		'html': {
-	\			'parentheses': ['start=/\v\<((area|base|br|col|embed|hr|img|input|keygen|link|menuitem|meta|param|source|track|wbr)[ >])@!\z([-_:a-zA-Z0-9]+)(\s+[-_:a-zA-Z0-9]+(\=("[^"]*"|'."'".'[^'."'".']*'."'".'|[^ '."'".'"><=`]*))?)*\>/ end=#</\z1># fold'],
-	\		},
+	\		'html': 0,
 	\		'css': 0,
 	\	}
 	\}
