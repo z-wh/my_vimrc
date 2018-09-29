@@ -9,70 +9,54 @@ function! WINDOWS()
     return  (has('win16') || has('win32') || has('win64'))
 endfunction
 
-"---------根据操作系统检测vim-plug是否存在和是否要下载------
+"------根据操作系统检测vim-plug是否存在,不存在自动下载-------
 if WINDOWS()
-
     if has('nvim')
-
         let vimplugPath=expand('~/AppData/Local/nvim/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
-            silent !curl -fLo AppData/Local/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            echo "vim-Plug install complete......."
-
+            silent !powershell md ~/AppData/Local/nvim/autoload; $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'; (New-Object Net.WebClient).DownloadFile($uri,$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('~/AppData/Local/nvim/autoload/plug.vim'))
             autocmd VimEnter * PlugInstall
         endif
 
         let plugPath='~/AppData/Local/nvim/plugged'
-
     else
-
         let vimplugPath=expand('~/vimfiles/autoload/plug.vim')
         
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
-            "vim shell命令无法调用powershell下载，因此需要安装curl下载
-            silent !curl -fLo vimfiles/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-            echo "vim-Plug install complete......."
-
+            silent !powershell md ~\vimfiles\autoload; $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'; (New-Object Net.WebClient).DownloadFile($uri,$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('~\vimfiles\autoload\plug.vim'))
             autocmd VimEnter * PlugInstall
         endif
 
         let plugPath=expand('~/vimfiles/plugged')
-
     endif
 
 else
 
     if has('nvim')
-
         let vimplugPath=expand('~/.local/share/nvim/site/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
             echo ""
             silent !\curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
             autocmd VimEnter * PlugInstall
         endif
 
         let plugPath=expand('~/.local/share/nvim/plugged')
-
     else
-
         let vimplugPath=expand('~/.vim/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
             echo ""
             silent !\curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
             autocmd VimEnter * PlugInstall
         endif
 
         let plugPath=expand('~/.vim/plugged')
-
     endif
 
 endif
@@ -85,14 +69,6 @@ if !has('nvim')
     set guioptions-=r "去除右滚动条
     set guioptions-=T "去除工具栏
     set guioptions-=L "去除左滚动条
-endif
-
-"将windows文件放置位置设成和linux一样
-"方便配置文件多平台通用
-if WINDOWS()
-    if !has('nvim')
-        set runtimepath+=$HOME\.vim,$HOME\.vim\after
-    endif
 endif
 
 set nu "显示行号
@@ -181,7 +157,7 @@ Plug 'morhetz/gruvbox'
 
 "----------------YouCompleteMe--------------------------------
 "if !has('nvim')
-    Plug 'Valloric/YouCompleteMe'
+    "Plug 'Valloric/YouCompleteMe'
 "endif
 
 "----------------全屏插件---------------------------------
@@ -270,7 +246,7 @@ Plug 'morhetz/gruvbox'
     Plug 'junegunn/fzf.vim'
 
    "php lsp { 
-    "Plug 'felixfbecker/php-language-server', {'do': 'composer install && composer run-script parse-stubs'}
+    Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
     "}
 "}
 
@@ -285,11 +261,6 @@ Plug 'morhetz/gruvbox'
     Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
     Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
     Plug 'ncm2/ncm2-html-subscope'
-
-    " Phpactor {
-    Plug 'phpactor/phpactor' ,  {'do': 'composer install', 'for': 'php'}
-    Plug 'phpactor/ncm2-phpactor'  
-    "}
 
     "snips {
         Plug 'ncm2/ncm2-ultisnips'
@@ -447,40 +418,3 @@ Plug 'skywind3000/asyncrun.vim'
 call plug#end()
 "-------------------vim-plug管理配置插件结束----------------------------
 
-if !has('nvim')
-    set diffexpr=MyDiff()
-
-    function! MyDiff()
-        let opt = '-a --binary '
-        if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-        if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-        let arg1 = v:fname_in
-        if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-        let arg1 = substitute(arg1, '!', '\!', 'g')
-        let arg2 = v:fname_new
-        if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-        let arg2 = substitute(arg2, '!', '\!', 'g')
-        let arg3 = v:fname_out
-        if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-        let arg3 = substitute(arg3, '!', '\!', 'g')
-        if $VIMRUNTIME =~ ' '
-            if &sh =~ '\<cmd'
-                if empty(&shellxquote)
-                    let l:shxq_sav = ''
-                    set shellxquote&
-                endif
-                let cmd = '"' . $VIMRUNTIME . '\diff"'
-            else
-                let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-            endif
-        else
-            let cmd = $VIMRUNTIME . '\diff'
-        endif
-        let cmd = substitute(cmd, '!', '\!', 'g')
-        silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3
-        if exists('l:shxq_sav')
-            let &shellxquote=l:shxq_sav
-        endif
-    endfunction
-
-endif
