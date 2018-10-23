@@ -22,15 +22,17 @@ if WINDOWS()
 
         let plugPath='~/AppData/Local/nvim/plugged'
     else
-        let vimplugPath=expand('~/vimfiles/autoload/plug.vim')
+        "设置windows的插件存放目录和linux一样
+        set runtimepath+=~/.vim,~/.vim/after
+        let vimplugPath=expand('~/.vim/autoload/plug.vim')
         
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
-            silent !powershell md ~\vimfiles\autoload; $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'; (New-Object Net.WebClient).DownloadFile($uri,$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('~\vimfiles\autoload\plug.vim'))
+            silent !powershell md ~\.vim\autoload; $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'; (New-Object Net.WebClient).DownloadFile($uri,$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('~\.vim\autoload\plug.vim'))
             autocmd VimEnter * PlugInstall
         endif
 
-        let plugPath=expand('~/vimfiles/plugged')
+        let plugPath=expand('~/.vim/plugged')
     endif
 
 else
@@ -62,7 +64,7 @@ else
 endif
 
 if !has('nvim')
-    set nocompatible "去除和vi的一致兼容
+    set nocompatible "去除和vi的一致,这样才能使用vim的加强功能
     let $LANG ='en' "设置为英语，因为utf-8导致中文乱码
     set langmenu=en
     set guioptions-=m "去除菜单
@@ -71,7 +73,7 @@ if !has('nvim')
     set guioptions-=L "去除左滚动条
 endif
 
-set nu "显示行号
+set number "显示行号
 set encoding=utf-8
 set backup "保存备份
 set undofile "保存撤销历史记录
@@ -93,7 +95,7 @@ set updatetime=100
 "逗号分隔的三个值分别指：行首的空白字符，分行符和插入模式开始处之前的字符。
 set backspace=indent,eol,start
 set history=200
-set cmdheight=2
+"set cmdheight=2
 
 "----------------设置tab键宽度-------------------------------
 "tabstop 表示按一个tab之后，显示出来的相当于几个空格，默认的是8个。
@@ -124,10 +126,10 @@ endif
     if !has('nvim')
         "插入模式下移动快捷键映射
         "放在最上面M键映射不成功，放下面才能映射成功
-        inoremap <M-h> <ESC>h
-        inoremap <M-l> <ESC>l
-        inoremap <M-k> <ESC>k
-        inoremap <M-j> <ESC>j
+        inoremap <M-h> <Left>
+        inoremap <M-l> <Right>
+        inoremap <M-k> <Up>
+        inoremap <M-j> <Down>
     endif
 
     inoremap " ""<ESC>i
@@ -143,6 +145,7 @@ let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\py
 
 "---------------vim-plug管理配置插件开始--------------------------
 call plug#begin(plugPath)
+unlet plugPath
 
 "----------------------颜色主题-------------------------------
 Plug 'altercation/vim-colors-solarized'
@@ -154,11 +157,6 @@ Plug 'morhetz/gruvbox'
     Plug 'vim-airline/vim-airline-themes'
     let g:airline#extensions#tabline#enabled = 1
 "}
-
-"----------------YouCompleteMe--------------------------------
-"if !has('nvim')
-    "Plug 'Valloric/YouCompleteMe'
-"endif
 
 "----------------全屏插件---------------------------------
 "fullscreen {
@@ -256,24 +254,27 @@ Plug 'morhetz/gruvbox'
     Plug 'ncm2/ncm2-tagprefix'
     Plug 'jsfaint/gen_tags.vim'
     Plug 'ncm2/ncm2-syntax' | Plug 'Shougo/neco-syntax'
+    Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
     Plug 'yuki-ycino/ncm2-dictionary'
     Plug 'ncm2/ncm2-cssomni'
     Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
     Plug 'ncm2/ncm2-vim' | Plug 'Shougo/neco-vim'
     Plug 'ncm2/ncm2-html-subscope'
+    Plug 'ncm2/ncm2-markdown-subscope'
 
     "snips {
         Plug 'ncm2/ncm2-ultisnips'
         Plug 'SirVer/ultisnips'
+        Plug 'honza/vim-snippets' "代码片断集
 
         " Press enter key to trigger snippet expansion
         " The parameters are the same as `:help feedkeys()`
         inoremap <silent> <expr> <CR> ncm2_ultisnips#expand_or("\<CR>", 'n')
 
         " c-j c-k for moving in snippet
-        " let g:UltiSnipsExpandTrigger		= "<Plug>(ultisnips_expand)"
-        let g:UltiSnipsJumpForwardTrigger	= "<c-j>"
-        let g:UltiSnipsJumpBackwardTrigger	= "<c-k>"
+        let g:UltiSnipsExpandTrigger = "<c-z>"
+        let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+        let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
         let g:UltiSnipsRemoveSelectModeMappings = 0
     "}
 
@@ -285,8 +286,13 @@ Plug 'morhetz/gruvbox'
     "}
 "}
 
+"----------------YouCompleteMe--------------------------------
+"if !has('nvim')
+    Plug 'Valloric/YouCompleteMe'
+"endif
+
 "----------------------------------taglist-------------------------------
-Plug 'vim-scripts/taglist.vim'
+Plug 'majutsushi/tagbar'
 
 "----------------------------------html插件------------------------------
 "html {
