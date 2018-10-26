@@ -79,7 +79,32 @@ if !has('nvim')
 endif
 
 set number "显示行号
-set encoding=utf-8
+
+"encoding { try to set encoding to utf-8
+    if WINDOWS()
+        " Be nice and check for multi_byte even if the config requires
+        " multi_byte support most of the time
+        if has('multi_byte')
+            " Windows cmd.exe still uses cp850. If Windows ever moved to
+            " Powershell as the primary terminal, this would be utf-8
+            set termencoding=cp850
+            " Let Vim use utf-8 internally, because many scripts require this
+            set encoding=utf-8
+            setglobal fileencoding=utf-8
+            " Windows has traditionally used cp1252, so it's probably wise to
+            " fallback into cp1252 instead of eg. iso-8859-15.
+            " Newer Windows files might contain utf-8 or utf-16 LE so we might
+            " want to try them first.
+            set fileencodings=ucs-bom,utf-8,utf-16le,cp1252,iso-8859-15
+        endif
+
+    else
+        " set default encoding to utf-8
+        set encoding=utf-8
+        set termencoding=utf-8
+    endif
+    scriptencoding utf-8
+"}
 
 "backup { 设置历史撤销记录、备份文件和交换存储文件的统一保存目录
     set backup "保存备份
@@ -150,11 +175,54 @@ endif
 set background=dark
 colorscheme gruvbox
 
-if has('nvim')
-    "GuiFont Consolas:h14
-else
-    set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI "字体
-endif
+" set default guifont {
+    if has('gui_running')
+        augroup ex_gui_font
+            " check and determine the gui font after GUIEnter.
+            " NOTE: getfontname function only works after GUIEnter.
+            au!
+            au GUIEnter * call s:set_gui_font()
+        augroup END
+
+        " set guifont
+        function! s:set_gui_font()
+            if has('nvim')
+                "GuiFont Consolas:h14
+            else
+                if has('gui_gtk2')
+                    if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 12
+                    elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono\ 12
+                    else
+                        set guifont=Luxi\ Mono\ 12
+                    endif
+                elseif has('x11')
+                    " Also for GTK 1
+                    set guifont=*-lucidatypewriter-medium-r-normal-*-*-180-*-*-m-*-*
+                elseif OSX()
+                    if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h15
+                    elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono:h15
+                    endif
+                elseif WINDOWS()
+                    if getfontname( 'DejaVu Sans Mono for Powerline' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h14:cANSI
+                    elseif getfontname( 'DejaVu Sans Mono' ) != ''
+                        set guifont=DejaVu\ Sans\ Mono:h14:cANSI
+                    elseif getfontname( 'Consolas' ) != ''
+                        set guifont=Consolas:h14:cANSI " this is the default visual studio font
+                    else
+                        set guifont=Lucida_Console:h14:cANSI
+                    endif
+                endif
+            endif
+        endfunction
+
+    endif
+"}
+
 "------------快捷键映射------------------------------
 "mapping {
     if !has('nvim')
