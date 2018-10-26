@@ -11,7 +11,9 @@ endfunction
 
 "------根据操作系统检测vim-plug是否存在,不存在自动下载-------
 if WINDOWS()
+"如果操作系统是Windows
     if has('nvim')
+    "软件是neovim
         let vimplugPath=expand('~/AppData/Local/nvim/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
@@ -22,7 +24,8 @@ if WINDOWS()
 
         let plugPath='~/AppData/Local/nvim/plugged'
     else
-        "设置windows的插件存放目录和linux一样
+    "软件是vim
+        "添加使用linux的插件安装目录
         set runtimepath+=~/.vim,~/.vim/after
         let vimplugPath=expand('~/.vim/autoload/plug.vim')
         
@@ -36,8 +39,9 @@ if WINDOWS()
     endif
 
 else
-
+"操作系统不是Windows"
     if has('nvim')
+    "软件是neovim
         let vimplugPath=expand('~/.local/share/nvim/site/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
@@ -49,6 +53,7 @@ else
 
         let plugPath=expand('~/.local/share/nvim/plugged')
     else
+    "软件是vim
         let vimplugPath=expand('~/.vim/autoload/plug.vim')
 
         if !filereadable(vimplugPath)
@@ -75,8 +80,37 @@ endif
 
 set number "显示行号
 set encoding=utf-8
-set backup "保存备份
-set undofile "保存撤销历史记录
+
+"backup { 设置历史撤销记录、备份文件和交换存储文件的统一保存目录
+    set backup "保存备份
+    set undofile "保存撤销历史记录
+    " setup back and swap directory
+    let data_dir = $HOME.'/.data/'
+    let backup_dir = data_dir . 'backup'
+    let swap_dir = data_dir . 'swap'
+    let undo_dir = data_dir . 'undo'
+    if finddir(data_dir) == ''
+        silent call mkdir(data_dir)
+    endif
+    if finddir(backup_dir) == ''
+        silent call mkdir(backup_dir)
+    endif
+    if finddir(swap_dir) == ''
+        silent call mkdir(swap_dir)
+    endif
+    if finddir(undo_dir) == ''
+        silent call mkdir(undo_dir)
+    endif
+    unlet backup_dir
+    unlet swap_dir
+    unlet data_dir
+    unlet undo_dir
+
+    set backupdir=$HOME/.data/backup " where to put backup file
+    set directory=$HOME/.data/swap " where to put swap file
+    set undodir=$HOME/.data/undo "设置撤销记录文件存放目录
+"}
+
 set showcmd "右下角显示未完成的命令
 set wildmenu "显示状态栏提示cmd命令
 "高亮光标所在行
@@ -288,7 +322,7 @@ Plug 'morhetz/gruvbox'
 
 "----------------YouCompleteMe--------------------------------
 "if !has('nvim')
-    Plug 'Valloric/YouCompleteMe'
+    Plug 'Valloric/YouCompleteMe', {'dir': '~/YouCompleteMe', 'do': 'python install.py --all'}
 "endif
 
 "----------------------------------taglist-------------------------------
