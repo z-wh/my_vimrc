@@ -243,7 +243,7 @@ colorscheme gruvbox
 "}
 
 "--------------------定义文件夹路径变量---------------------------
-let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\python.exe'
+"let pyt3_path= 'C:\Users\Administrator\AppData\Local\Programs\Python\Python37\python.exe'
 
 "---------------vim-plug管理配置插件开始--------------------------
 call plug#begin(plugPath)
@@ -281,8 +281,8 @@ Plug 'morhetz/gruvbox'
     "nvim-yarp {
         Plug 'roxma/nvim-yarp'
         "指定python3的路径地址
-        let g:python3_host_prog=pyt3_path
-        unlet pyt3_path
+        "let g:python3_host_prog=pyt3_path
+        "unlet pyt3_path
     "}
 
     "vim 使用ncm2需要额外安装该插件支持
@@ -325,9 +325,17 @@ Plug 'morhetz/gruvbox'
 "}
 
 "Language Server Protocol {
+function DownLCBin()
+    if LINUX()
+        echo 'this is Linux'
+        bash install.sh
+    elseif WINDOWS()
+        echo 'this is windows'
+        powershell -executionpolicy bypass -File install.ps1
+endfunction 
     Plug 'autozimu/LanguageClient-neovim', {
         \ 'branch': 'next',
-        \ 'do': 'powershell -executionpolicy bypass -File install.ps1'
+        \ 'do': function ('DownLCBin')
         \ }
     set hidden "不用保存也能切换buffer"
     let g:LanguageClient_serverCommands = {
@@ -390,7 +398,20 @@ Plug 'morhetz/gruvbox'
 
 "----------------YouCompleteMe--------------------------------
 "if !has('nvim')
-    Plug 'Valloric/YouCompleteMe', {'dir': '~/YouCompleteMe', 'do': 'python install.py --all'}
+function! BuildYCM(info) 
+    " info is a dictionary with 3 fields  
+    " - name:   name of the plugin  
+    " - status: 'installed', 'updated', or 'unchanged'
+    " - force:  set on PlugInstall! or PlugUpdate!  
+    if a:info.status == 'installed' || a:info.force
+        if LINUX()
+            !./install.py --all
+        elseif WINDOWS()
+            ./pyhon3 install.py --all
+    endif
+endfunction
+
+    Plug 'Valloric/YouCompleteMe', {'dir': '~/YouCompleteMe', 'do': function('BuildYCM') }
 "endif
 
 "----------------------------------taglist-------------------------------
