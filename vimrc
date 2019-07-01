@@ -28,7 +28,7 @@ if WINDOWS()
         "添加使用linux的插件安装目录
         set runtimepath+=~/.vim,~/.vim/after
         let vimplugPath=expand('~/.vim/autoload/plug.vim')
-        
+
         if !filereadable(vimplugPath)
             echo "Installing Vim-Plug..."
             silent !powershell md ~\.vim\autoload; $uri = 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'; (New-Object Net.WebClient).DownloadFile($uri,$ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath('~\.vim\autoload\plug.vim'))
@@ -314,7 +314,7 @@ Plug 'morhetz/gruvbox'
 
      au User Ncm2Plugin call ncm2#register_source({
              \ 'name' : 'css',
-             \ 'priority': 9, 
+             \ 'priority': 9,
              \ 'subscope_enable': 1,
              \ 'scope': ['css','scss'],
              \ 'mark': 'css',
@@ -332,7 +332,7 @@ function DownLCBin()
     elseif WINDOWS()
         echo 'this is windows'
         powershell -executionpolicy bypass -File install.ps1
-endfunction 
+endfunction
     Plug 'autozimu/LanguageClient-neovim', {
         \ 'branch': 'next',
         \ 'do': function ('DownLCBin')
@@ -353,7 +353,7 @@ endfunction
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
 
-   "php lsp { 
+   "php lsp {
     Plug 'roxma/LanguageServer-php-neovim',  {'do': 'composer install && composer run-script parse-stubs'}
     "}
 "}
@@ -398,16 +398,16 @@ endfunction
 
 "----------------YouCompleteMe--------------------------------
 "if !has('nvim')
-function! BuildYCM(info) 
-    " info is a dictionary with 3 fields  
-    " - name:   name of the plugin  
+function! BuildYCM(info)
+    " info is a dictionary with 3 fields
+    " - name:   name of the plugin
     " - status: 'installed', 'updated', or 'unchanged'
-    " - force:  set on PlugInstall! or PlugUpdate!  
+    " - force:  set on PlugInstall! or PlugUpdate!
     if a:info.status == 'installed' || a:info.force
         if LINUX()
             !./install.py --all
         elseif WINDOWS()
-            ./pyhon3 install.py --all
+            ./python3 install.py --all
     endif
 endfunction
 
